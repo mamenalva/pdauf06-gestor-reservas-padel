@@ -37,6 +37,9 @@ public class Usuario {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String rol; // Valores: "ROLE_USER" o "ROLE_ADMIN"
+
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<Reserva> reservas = new ArrayList<>();

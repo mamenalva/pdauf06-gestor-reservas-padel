@@ -5,7 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import com.mcan.gestor_reservas_padel.entities.Usuario;
 
+import java.util.Optional;
+
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
+
+    Optional<Usuario> findByEmail(String email);
 }
 
