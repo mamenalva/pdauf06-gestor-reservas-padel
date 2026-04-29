@@ -2,7 +2,7 @@
 
 ## Descripción General
 
-Esta API REST proporciona endpoints para gestionar un sistema completo de reservas de pistas de pádel. Incluye gestión de usuarios, pistas y sus correspondientes reservas.
+Esta API REST proporciona endpoints para gestionar un sistema completo de reservas de pistas de pádel. Incluye gestión de usuarios, pistas, sus correspondientes reservas y autenticación mediante JWT.
 
 ## URL Base
 
@@ -14,19 +14,94 @@ http://localhost:8080
 
 ## 📋 Tabla de Contenidos
 
-1. [Usuarios](#usuarios)
-2. [Pistas](#pistas)
-3. [Reservas](#reservas)
-4. [Respuestas de Error](#respuestas-de-error)
+1. [Autenticación](#autenticación)
+2. [Usuarios](#usuarios)
+3. [Pistas](#pistas)
+4. [Reservas](#reservas)
+5. [Respuestas de Error](#respuestas-de-error)
+6. [Información de Seguridad](#información-de-seguridad)
 
 ---
 
+## Autenticación
+
+### 1. Registrar Usuario
+**POST** `/api/auth/register`
+
+Crea un nuevo usuario y genera un token JWT para acceder a la API.
+
+**Request Body:**
+```json
+{
+  "nombre": "Juan García",
+  "email": "juan@example.com",
+  "password": "securePassword123"
+}
+```
+
+**Response (201 Created):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "email": "juan@example.com",
+  "nombre": "Juan García",
+  "rol": "USER"
+}
+```
+
+**Response (400 Bad Request):**
+```json
+{
+  "error": "Email ya registrado"
+}
+```
+
+---
+
+### 2. Login
+**POST** `/api/auth/login`
+
+Autentica un usuario existente y genera un token JWT.
+
+**Request Body:**
+```json
+{
+  "email": "juan@example.com",
+  "password": "securePassword123"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "email": "juan@example.com",
+  "nombre": "Juan García",
+  "rol": "USER"
+}
+```
+
+**Response (401 Unauthorized):**
+```json
+{
+  "error": "Credenciales inválidas"
+}
+```
+
 ## Usuarios
+
+> ⚠️ **Requiere autenticación**: Todos los endpoints de usuarios requieren un token JWT válido en el header `Authorization: Bearer {token}`
 
 ### 1. Crear Usuario
 **POST** `/api/usuarios`
 
 Crea un nuevo usuario en el sistema.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+```
 
 **Request Body:**
 ```json
@@ -54,6 +129,11 @@ Crea un nuevo usuario en el sistema.
 
 Obtiene la lista completa de todos los usuarios registrados.
 
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
 **Response (200 OK):**
 ```json
 [
@@ -78,6 +158,11 @@ Obtiene la lista completa de todos los usuarios registrados.
 **GET** `/api/usuarios/{id}`
 
 Obtiene los detalles de un usuario específico por su identificador.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
 
 **Parámetros:**
 - `id` (path parameter, required): Identificador único del usuario
@@ -106,6 +191,12 @@ Obtiene los detalles de un usuario específico por su identificador.
 
 Actualiza los datos de un usuario existente.
 
+**Headers:**
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+```
+
 **Parámetros:**
 - `id` (path parameter, required): Identificador único del usuario
 
@@ -133,7 +224,12 @@ Actualiza los datos de un usuario existente.
 ### 5. Eliminar Usuario
 **DELETE** `/api/usuarios/{id}`
 
-Elimina un usuario del sistema.
+Elimina un usuario del sistema. **Nota:** Se eliminarán todas sus reservas asociadas.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
 
 **Parámetros:**
 - `id` (path parameter, required): Identificador único del usuario
@@ -154,10 +250,18 @@ Elimina un usuario del sistema.
 
 ## Pistas
 
+> ⚠️ **Requiere autenticación**: Todos los endpoints de pistas requieren un token JWT válido en el header `Authorization: Bearer {token}`
+
 ### 1. Crear Pista
 **POST** `/api/pistas`
 
 Crea una nueva pista en el sistema.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+```
 
 **Request Body:**
 ```json
@@ -184,6 +288,11 @@ Crea una nueva pista en el sistema.
 **GET** `/api/pistas`
 
 Obtiene la lista completa de todas las pistas disponibles.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+```
 
 **Response (200 OK):**
 ```json
@@ -216,6 +325,11 @@ Obtiene la lista completa de todas las pistas disponibles.
 
 Obtiene los detalles de una pista específica.
 
+**Headers:**
+```
+Authorization: Bearer {token}
+```
+
 **Parámetros:**
 - `id` (path parameter, required): Identificador único de la pista
 
@@ -242,6 +356,12 @@ Obtiene los detalles de una pista específica.
 **PUT** `/api/pistas/{id}`
 
 Actualiza los datos de una pista existente.
+
+**Headers:**
+```
+Authorization: Bearer {token}
+Content-Type: application/json
+```
 
 **Parámetros:**
 - `id` (path parameter, required): Identificador único de la pista
